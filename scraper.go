@@ -82,14 +82,15 @@ func stringToTime(date string) string {
 func printJobs(jobs []JobPosting) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Title", "School"})
+	t.AppendHeader(table.Row{"Title", "School", "Closes"})
 	for _, job := range jobs {
 		// N.B. title, school, location, hours, salary, description, detailsUrl, closingDate
 		t.AppendRows([]table.Row{
-			{job.title, job.school},
+			{job.title, job.school, job.closingDate},
 		})
 	}
 	t.AppendFooter(table.Row{"COUNT", len(jobs)})
+	t.SetStyle(table.StyleLight)
 	t.Render()
 }
 
