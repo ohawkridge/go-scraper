@@ -1,0 +1,28 @@
+/******************/
+/*   Typography   */
+/******************/
+
+body {
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+}
+
+/******************/
+/*       Nav      */
+/******************/
+
+nav li {
+    list-style-type: none;
+}
+
+nav ul {
+    padding-left: 0;
+}
+
+/******************/
+/*    Utilities   */
+/******************/
+
+.debug {
+    border: 1px dashed green;
+}
+
