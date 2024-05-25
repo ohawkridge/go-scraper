@@ -8,7 +8,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/gocolly/colly"
+	// "github.com/gocolly/colly"
 	"github.com/jedib0t/go-pretty/v6/table"
 )
 
@@ -82,52 +82,70 @@ func stringToTime(date string) string {
 func printJobs(jobs []JobPosting) {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Title", "School", "Closes"})
-	for _, job := range jobs {
-		// N.B. title, school, location, hours, salary, description, detailsUrl, closingDate
-		t.AppendRows([]table.Row{
-			{job.title, job.school, job.closingDate},
-		})
-	}
+	t.AppendHeader(table.Row{"Title", "School"})
+	// for _, job := range jobs {
+	// 	// N.B. title, school, location, hours, salary, description, detailsUrl, closingDate
+	// 	t.AppendRows([]table.Row{
+	// 		{job.title, job.school},
+	// 	})
+	// 	// INSERT into db
+	// 	insertJob(job)
+	// }
 	t.AppendFooter(table.Row{"COUNT", len(jobs)})
 	t.SetStyle(table.StyleLight)
 	t.Render()
+
+	// j1 := JobPosting{
+	// 	"Test Job",
+	// 	"Chauncy School",
+	// 	"Ware",
+	// 	"Full time",
+	// 	"£40,000-£50,000 MPS",
+	// 	"Blah blah blah",
+	// 	"https://chauncyschool.com/job",
+	// 	"25-05-2024",
+	// }
+	// insertJob(j1)
 }
 
 func main() {
-	// initialise a collector object
-	collector := colly.NewCollector()
+	// connectDb()
 
-	collector.OnRequest(func(r *colly.Request) {
-		// print the url of that request
-		fmt.Println("Visiting", r.URL)
-	})
-	collector.OnResponse(func(r *colly.Response) {
-		fmt.Println("Got a response from", r.Request.URL)
-	})
-	collector.OnHTML("div.listing.joblisting > ul > li", func(e *colly.HTMLElement) {
-		// initialise a new job struct every time we visit a page
-		job := JobPosting{}
+	// // initialise a collector object
+	// collector := colly.NewCollector()
 
-		// find the job parts and assign them to the struct
-		job.title = e.ChildText("h3")
-		job.school = e.ChildText("h4")
-		job.location = e.ChildText("div > p:nth-child(4) span:nth-child(1)")
-		job.hours = e.ChildText("div > p:nth-child(4) span:nth-child(2)")
-		job.salary = e.ChildText("div > p:nth-child(5)")
+	// collector.OnRequest(func(r *colly.Request) {
+	// 	// print the url of that request
+	// 	fmt.Println("Visiting", r.URL)
+	// })
+	// collector.OnResponse(func(r *colly.Response) {
+	// 	fmt.Println("Got a response from", r.Request.URL)
+	// })
+	// collector.OnHTML("div.listing.joblisting > ul > li", func(e *colly.HTMLElement) {
+	// 	// initialise a new job struct every time we visit a page
+	// 	job := JobPosting{}
 
-		// convert dates like "16th Apr 2024 12:00 PM" to a format
-		// that can be parsed as Go datetime objects in the future
-		job.closingDate = stringToTime(e.ChildText("div > p.date"))
+	// 	// find the job parts and assign them to the struct
+	// 	job.title = e.ChildText("h3")
+	// 	job.school = e.ChildText("h4")
+	// 	job.location = e.ChildText("div > p:nth-child(4) span:nth-child(1)")
+	// 	job.hours = e.ChildText("div > p:nth-child(4) span:nth-child(2)")
+	// 	job.salary = e.ChildText("div > p:nth-child(5)")
 
-		job.description = e.ChildText("div > p:nth-child(7)")
-		job.detailsUrl = "https://www.teachinherts.com" + e.ChildAttr("a", "href")
-		jobs = append(jobs, job)
-	})
-	collector.OnError(func(r *colly.Response, e error) {
-		fmt.Println("An error occurred:", e)
-	})
-	collector.Visit(url)
-	printJobs(jobs)
-	writeTxt()
+	// 	// convert dates like "16th Apr 2024 12:00 PM" to a format
+	// 	// that can be parsed as Go datetime objects in the future
+	// 	job.closingDate = stringToTime(e.ChildText("div > p.date"))
+
+	// 	job.description = e.ChildText("div > p:nth-child(7)")
+	// 	job.detailsUrl = "https://www.teachinherts.com" + e.ChildAttr("a", "href")
+	// 	jobs = append(jobs, job)
+	// })
+	// collector.OnError(func(r *colly.Response, e error) {
+	// 	fmt.Println("An error occurred:", e)
+	// })
+	// collector.Visit(url)
+	// printJobs(jobs)
+	// writeTxt()
+	deleteAllJobs()
+	// testTemplates()
 }

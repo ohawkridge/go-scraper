@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Job Detail (XX)</title>
+    <title>All jobs</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 
@@ -15,18 +15,11 @@
     </nav>
 	<!-- N.B. title, school, location, hours, salary, description, detailsUrl, closingDate -->
     <main class="content">
-        <h1>Job title</h1>
-        <h4>School</h4>
-        <p>Location</p>
         <ul>
-            <li>Hours</li>
-            <li>Salary</li>
-            <li>Description</li>
-            <li>Closes: CLOSING</li>
-        </ul>
-        <p>
-            <a href="http://#">URL HERE</a>
-        </p>
+        {{ range . }}
+            <li>{{ .title }} ({{ .school }})</li>
+        {{ end }}
+        </uL>
     </main>
     <footer class="debug small-text">
         &copy;2024

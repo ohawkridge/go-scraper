@@ -1,9 +1,57 @@
+body, html {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+    font-size: 16px; /* Default font size */
+}
+.content {
+    flex: 1;
+}
+
 /******************/
 /*   Typography   */
 /******************/
 
-body {
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
+.small-text {
+    font-size: 0.875rem; /* 14px */
+}
+
+.regular-text {
+    font-size: 1rem; /* 16px (base size) */
+}
+
+.large-text {
+    font-size: 1.25rem; /* 20px */
+}
+
+/* Optional: Line heights for better readability */
+.small-text {
+    line-height: 1.4; /* 1.4 times the font size */
+}
+
+.regular-text {
+    line-height: 1.5; /* 1.5 times the font size */
+}
+
+.large-text {
+    line-height: 1.6; /* 1.6 times the font size */
+}
+
+/* Optional: Font weight and spacing adjustments for clarity */
+.small-text {
+    font-weight: 400; /* Normal weight */
+    letter-spacing: 0.01em; /* Slightly increased spacing */
+}
+
+.regular-text {
+    font-weight: 400; /* Normal weight */
+    letter-spacing: 0.01em; /* Slightly increased spacing */
+}
+
+.large-text {
+    font-weight: 500; /* Medium weight */
+    letter-spacing: 0.02em; /* More spacing for larger text */
 }
 
 /******************/
@@ -19,10 +67,19 @@ nav ul {
 }
 
 /******************/
+/*     Footer     */
+/******************/
+
+footer {
+    /* background-color: #f1f1f1; */
+    text-align: center;
+    padding: 10px;
+}
+
+/******************/
 /*    Utilities   */
 /******************/
 
 .debug {
     border: 1px dashed green;
 }
-
