@@ -13,13 +13,12 @@
             <li><a href="/" title="Home">Home</a></li>
         </ul>
     </nav>
-	<!-- N.B. title, school, location, hours, salary, description, detailsUrl, closingDate -->
     <main class="content">
         <ul>
         {{ range . }}
-            <li>{{ .title }} ({{ .school }})</li>
+            <li>{{ .Title }} — {{ .School }}</li>
         {{ end }}
-        </uL>
+        </ul>
     </main>
     <footer class="debug small-text">
         &copy;2024

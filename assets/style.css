@@ -1,10 +1,13 @@
-body, html {
+body,
+html {
     height: 100%;
     display: flex;
     flex-direction: column;
     font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto;
-    font-size: 16px; /* Default font size */
+    font-size: 16px;
+    /* Default font size */
 }
+
 .content {
     flex: 1;
 }
@@ -14,44 +17,56 @@ body, html {
 /******************/
 
 .small-text {
-    font-size: 0.875rem; /* 14px */
+    font-size: 0.875rem;
+    /* 14px */
 }
 
 .regular-text {
-    font-size: 1rem; /* 16px (base size) */
+    font-size: 1rem;
+    /* 16px (base size) */
 }
 
 .large-text {
-    font-size: 1.25rem; /* 20px */
+    font-size: 1.25rem;
+    /* 20px */
 }
 
 /* Optional: Line heights for better readability */
 .small-text {
-    line-height: 1.4; /* 1.4 times the font size */
+    line-height: 1.4;
+    /* 1.4 times the font size */
 }
 
 .regular-text {
-    line-height: 1.5; /* 1.5 times the font size */
+    line-height: 1.5;
+    /* 1.5 times the font size */
 }
 
 .large-text {
-    line-height: 1.6; /* 1.6 times the font size */
+    line-height: 1.6;
+    /* 1.6 times the font size */
 }
 
 /* Optional: Font weight and spacing adjustments for clarity */
 .small-text {
-    font-weight: 400; /* Normal weight */
-    letter-spacing: 0.01em; /* Slightly increased spacing */
+    font-weight: 400;
+    /* Normal weight */
+    letter-spacing: 0.01em;
+    /* Slightly increased spacing */
 }
 
 .regular-text {
-    font-weight: 400; /* Normal weight */
-    letter-spacing: 0.01em; /* Slightly increased spacing */
+    font-weight: 400;
+    /* Normal weight */
+    letter-spacing: 0.01em;
+    /* Slightly increased spacing */
 }
 
 .large-text {
-    font-weight: 500; /* Medium weight */
-    letter-spacing: 0.02em; /* More spacing for larger text */
+    font-weight: 500;
+    /* Medium weight */
+    letter-spacing: 0.02em;
+    /* More spacing for larger text */
 }
 
 /******************/
@@ -64,6 +79,16 @@ nav li {
 
 nav ul {
     padding-left: 0;
+}
+
+ul.browse li {
+    margin-bottom: 10px;
+    /* Space between list items */
+}
+
+/* Remove margin from the last item */
+ul.browse li:last-child {
+    margin-bottom: 0;
 }
 
 /******************/
