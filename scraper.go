@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 	"unicode/utf8"
 
@@ -92,15 +93,31 @@ func main() {
 		panic(err.Error())
 	}
 
-	// initialise a collector object
+	// Initialise a collector object
 	collector := colly.NewCollector()
+
+	collector.Limit(&colly.LimitRule{
+		DomainGlob:  "*teachinherts.*",
+		Parallelism: 2,
+		Delay:       5 * time.Second,
+	})
 
 	collector.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting", r.URL, "✔️")
 	})
+
 	collector.OnResponse(func(r *colly.Response) {
 		fmt.Println("Got a response from", r.Request.URL, "✔️")
 	})
+
+	// Handle pagination by looking for next page link
+	collector.OnHTML("a.next", func(e *colly.HTMLElement) {
+		nextPage := e.Attr("href")
+		if nextPage != "" {
+			e.Request.Visit(nextPage)
+		}
+	})
+
 	collector.OnHTML("div.listing.joblisting > ul > li", func(e *colly.HTMLElement) {
 		// initialise a new job struct every time we visit a page
 		job := JobPosting{}
