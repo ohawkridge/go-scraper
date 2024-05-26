@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Jobs by Location</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 
@@ -25,18 +25,11 @@
         </ul>
     </nav>
     <main class="content">
-        <h5>Browse by category</h5>
+        <h4>Browse by location</h4>
         <ul class="browse">
-            <li>
-                Job type—<a href="http://#">Teaching</a>, <a href="http://#">Early years</a>
-            </li>
-            <li>
-                Hours—<a href="http://#">Full time</a>, <a href="http://#">Part time</a>
-            </li>
-            <li>
-                Subject—<a href="http://#">Art</a>, <a href="http://#">Business</a>, <a href="http://#">Computing</a>, <a
-                    href="http://#">Design & Technology</a>, <a href="http://#">Geography</a>, <a href="http://#">Drama</a>, <a href="http://#">English</a>, <a href="file:///Users/owen/go-scraper/subjects.html">&hellip;</a>
-            </li>
+        {{ range . }}
+            <li><a href="/locations/{{ .Url }}.html">{{ .Location }}</a></li>
+        {{ end }}
         </ul>
     </main>
     <footer class="small-text">

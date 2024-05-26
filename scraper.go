@@ -23,7 +23,7 @@ var (
 )
 
 type JobPosting struct {
-	Title, School, Location, Hours, Salary, Description, DetailsUrl, ClosingDate string
+	ID, Title, School, Location, Hours, Salary, Description, DetailsUrl, ClosingDate string
 }
 
 // Converts a three-letter month name into a two-digit string.
@@ -86,13 +86,7 @@ func hertsStringToTime(date string) string {
 	return date
 }
 
-func main() {
-	// Open database connection
-	db, err = sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err.Error())
-	}
-
+func scrapeJobs() {
 	// Initialise a collector object
 	collector := colly.NewCollector()
 
@@ -141,12 +135,39 @@ func main() {
 		fmt.Println("An error occurred:", e)
 	})
 	collector.Visit(url)
+}
+
+func main() {
+	// Open database connection
+	db, err = sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// scrapeJobs()
 
 	// Write jobs to MySQL DB
-	writeJobsToDb()
+	// writeJobsToDb()
+
+	// countJobs()
 
 	// Write all-jobs template
-	testTemplates(jobs)
+	// testTemplates(jobs)
+
+	// fetchAllJobs()
+	getLocations()
+}
+
+func countJobs() {
+	verifyDb()
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM job").Scan(&count)
+	if err != nil {
+		fmt.Println("Error executing query:", err)
+		return
+	}
+
+	fmt.Printf("The db contains %d jobs.\n", count)
 }
 
 func writeJobsToDb() {
@@ -169,13 +190,31 @@ func writeJobsToDb() {
 	closeDb()
 }
 
-// Verifies connection to the database.
-func verifyDb() {
-	err = db.Ping()
+func fetchAllJobs() {
+	verifyDb()
+	// Define the query to fetch the first 10 rows
+	query := "SELECT * FROM job ORDER BY id ASC LIMIT 10"
+
+	// Execute the query
+	rows, err := db.Query(query)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("Error executing query:", err)
+		return
 	}
-	fmt.Println("Connected to MySQL @ AWS ✔️")
+
+	var jobs []JobPosting
+	for rows.Next() {
+		var job JobPosting
+		// Scan the row into variables
+		err = rows.Scan(&job.ID, &job.Title, &job.School, &job.Location, &job.Hours, &job.Salary, &job.Description, &job.DetailsUrl, &job.ClosingDate)
+		if err != nil {
+			fmt.Println("Error scanning row:", err)
+			return
+		}
+		jobs = append(jobs, job)
+	}
+
+	writeDetails(jobs)
 }
 
 func closeDb() {

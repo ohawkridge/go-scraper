@@ -10,6 +10,7 @@ html {
 
 .content {
     flex: 1;
+    padding: 10px;
 }
 
 /******************/
@@ -73,12 +74,25 @@ html {
 /*       Nav      */
 /******************/
 
-nav li {
-    list-style-type: none;
+nav ul {
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
 }
 
-nav ul {
-    padding-left: 0;
+
+nav li {
+    list-style-type: none;
+    display: inline;
+    padding: 10px;
+}
+
+nav li:last-child {
+    border-right: none;
+}
+
+ul.browse {
+    padding-left: 20px;
 }
 
 ul.browse li {
@@ -97,14 +111,93 @@ ul.browse li:last-child {
 
 footer {
     /* background-color: #f1f1f1; */
+    /* border-top: 1px solid #f1f1f1; */
     text-align: center;
     padding: 10px;
 }
+
+/******************/
+/*     Tables     */
+/******************/
+
+table {
+    border-spacing: 0;
+    display: block;
+    overflow-x: auto;
+    text-align: left;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td,
+th {
+    border-bottom: 0.1rem solid #e1e1e1;
+    padding: 1.2rem 1.5rem;
+}
+
+td:first-child,
+th:first-child {
+    padding-left: 0;
+}
+
+td:last-child,
+th:last-child {
+    padding-right: 0;
+}
+
+@media (min-width: 40rem) {
+    table {
+        display: table;
+        overflow-x: initial;
+    }
+}
+
+/******************/
+/*      Card      */
+/******************/
+
+aside.card {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    max-width: 100%;
+    /* Allow horizontal scrolling if content overflows */
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    aside.card {
+        /* Optional: adjust padding or other styles for smaller screens */
+        /* padding: 10px; */
+    }
+}
+
+/* Ensure the anchor tag behaves like a block element */
+a.clickable-aside {
+    display: block;
+    text-decoration: none;
+    /* Remove underline */
+    color: inherit;
+    /* Inherit the text color from parent */
+}
+
+/* Ensure the aside element takes up the full width of the anchor tag */
+a.clickable-aside aside {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+p.subtitle {
+    margin-bottom: 30px;
+}   
 
 /******************/
 /*    Utilities   */
 /******************/
 
 .debug {
-    border: 1px dashed green;
+    /* border: 1px dashed green; */
 }
