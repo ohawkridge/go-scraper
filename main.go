@@ -21,6 +21,26 @@ func main() {
 		scrapeUrl(url)
 	case command == "delete":
 		deleteAllJobs()
+	case command == "locations":
+		locations, err := getLocations()
+		if err != nil {
+			fmt.Println("Error getting job locations.\n", err)
+		}
+		// Output browse by location html file
+		locationsToFile(locations)
+
+		// For each location, generate html files
+		for _, location := range locations {
+			jobs, err := getLocationJobs(location)
+			if err != nil {
+				fmt.Printf("Error getting jobs for %s.\n", location.Location)
+			}
+			jobsToFile(jobs, location.Url)
+		}
+	case command == "full":
+		// Create a detail.html for *every* job
+		jobs := getJobs(-1)
+		jobsToFiles(jobs)
 	}
 
 	// If still open, close the database connection

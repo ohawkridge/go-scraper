@@ -80,6 +80,7 @@ func getJobs(limit int) []JobPosting {
 			fmt.Println("Error scanning row:", err)
 			panic(err.Error())
 		}
+		job.ClosingDate = getRelativeDate(job.ClosingDate)
 		jobs = append(jobs, job)
 	}
 
@@ -110,14 +111,11 @@ func getLocations() ([]Location, error) {
 			fmt.Println("Error scanning row:", err)
 			return nil, err
 		}
+		// Turn location into url-safe-slug
 		location.Url = locationToSlug(location.Location)
 		locations = append(locations, location)
-
-		// For each location, find matching jobs
-		getLocationJobs(location)
 	}
 
-	// fmt.Printf("Locations: %#v\n", locations)
 	return locations, err
 }
 
@@ -157,7 +155,7 @@ func getLocationJobs(location Location) ([]JobPosting, error) {
 			fmt.Println("Error scanning row:", err)
 			return nil, err
 		}
-
+		job.ClosingDate = getRelativeDate(job.ClosingDate)
 		jobs = append(jobs, job)
 	}
 
@@ -229,8 +227,10 @@ func insertJobs(jobs []JobPosting) {
 
 // Delete *all* jobs ahead of re-scraping
 func deleteAllJobs() {
+	verifyDb()
+
 	// TRUNCATE is faster because it removes all rows by deallocating the data pages used by the table
-	query := "TRUNCATE TABLE table_name;"
+	query := "TRUNCATE TABLE job;"
 	_, err := db.Exec(query)
 	if err != nil {
 		fmt.Println("Error executing query:", err)

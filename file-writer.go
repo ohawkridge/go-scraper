@@ -10,14 +10,14 @@ import (
 //
 // Parameters:
 //   - jobs: an array of JobPosting objects.
-func jobsToFile(jobs []JobPosting) {
+func jobsToFile(jobs []JobPosting, filename string) {
 	// Create new template and parse for errors
 	tmpl, err := template.New("template-job-cards.tmpl").ParseFiles("template-job-cards.tmpl")
 	if err != nil {
 		panic(err)
 	}
 	var f *os.File
-	f, err = os.Create("html/jobs.html")
+	f, err = os.Create(fmt.Sprintf("html/%s.html", filename))
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ func jobsToFiles(jobs []JobPosting) {
 			panic(err)
 		}
 		var f *os.File
-		fileStr := fmt.Sprintf("html/jobs/job-%d.html", i)
+		fileStr := fmt.Sprintf("html/j/job-%d.html", i)
 		f, err = os.Create(fileStr)
 		if err != nil {
 			panic(err)

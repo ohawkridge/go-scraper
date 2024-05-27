@@ -87,7 +87,8 @@ func scrapeUrl(url string) {
 	collector.Limit(&colly.LimitRule{
 		DomainGlob:  "*teachinherts.*",
 		Parallelism: 2,
-		Delay:       5 * time.Second,
+		Delay:       3,               // Start with a 3 second delay
+		RandomDelay: 5 * time.Second, // Additional random delay between 0 and 5 seconds
 	})
 
 	collector.OnRequest(func(r *colly.Request) {
