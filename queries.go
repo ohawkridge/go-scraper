@@ -111,7 +111,7 @@ func getLocationJobs(location Location) {
 		panic(err)
 	}
 	var f *os.File
-	fileStr := fmt.Sprintf("locations/%s.html", location.Url)
+	fileStr := fmt.Sprintf("location/%s.html", location.Url)
 	f, err = os.Create(fileStr)
 	if err != nil {
 		panic(err)

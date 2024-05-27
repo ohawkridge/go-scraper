@@ -3,6 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"html/template"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -155,7 +157,8 @@ func main() {
 	// testTemplates(jobs)
 
 	// fetchAllJobs()
-	getLocations()
+	// getLocations()
+	jobsBySubject()
 }
 
 func countJobs() {
@@ -219,4 +222,75 @@ func fetchAllJobs() {
 
 func closeDb() {
 	db.Close()
+}
+
+func jobsBySubject() {
+	verifyDb()
+
+	subjects := []string{
+		"Art",
+		"Business",
+		"Computing",
+		"Design & Technology",
+		"Drama",
+		"English",
+		"Geography",
+		"History",
+		"Maths",
+		"MFL",
+		"Music",
+		"PE",
+		"Religious Studies",
+		"Science",
+		"SEND",
+		"Sociology & Psychology",
+	}
+
+	// Search the database for jobs in each subject
+	for _, subject := range subjects {
+		// fmt.Println(subject, "jobs...")
+		// Build query
+		// query := fmt.Sprintf("SELECT * FROM job WHERE LOWER(title) LIKE '%%%s%%' OR LOWER(description) LIKE '%%%s%%';", subject, subject)
+		query := fmt.Sprintf("SELECT * FROM job WHERE LOWER(title) LIKE '%%%s%%';", subject)
+
+		rows, err := db.Query(query)
+		if err != nil {
+			fmt.Println("Error executing query:", err)
+			return
+		}
+
+		var jobs []JobPosting
+		for rows.Next() {
+			// Scan rows into jobs
+			var job JobPosting
+			err = rows.Scan(&job.ID, &job.Title, &job.School, &job.Location, &job.Hours, &job.Salary, &job.Description, &job.DetailsUrl, &job.ClosingDate)
+			if err != nil {
+				fmt.Println("Error scanning row:", err)
+				return
+			}
+			jobs = append(jobs, job)
+			// fmt.Println(job.ID)
+		}
+		// fmt.Printf("Found %d %s jobs\n", len(jobs), subject)
+		// Write a file containing these jobs
+		tmpl, err := template.New("job-cards.tmpl").ParseFiles("job-cards.tmpl")
+		if err != nil {
+			panic(err)
+		}
+		var f *os.File
+		fileName := fmt.Sprintf("subject/%s.html", strings.ToLower(subject))
+		f, err = os.Create(fileName)
+		if err != nil {
+			panic(err)
+		}
+		err = tmpl.Execute(f, jobs)
+		if err != nil {
+			panic(err)
+		}
+		err = f.Close()
+		if err != nil {
+			panic(err)
+		}
+
+	}
 }
