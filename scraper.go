@@ -1,10 +1,7 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
-	"html/template"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -13,15 +10,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gocolly/colly"
-)
-
-const url string = "https://www.teachinherts.com/find-a-job.htm"
-const dsn string = "admin:AcStrWTVJgodnDCuQXyb@tcp(jobs.clwa0i6yu538.eu-west-2.rds.amazonaws.com:3306)/jobs"
-
-var (
-	db   *sql.DB
-	err  error
-	jobs []JobPosting
 )
 
 type JobPosting struct {
@@ -88,10 +76,14 @@ func hertsStringToTime(date string) string {
 	return date
 }
 
-func scrapeJobs() {
+// Use GOColly package to scrape all jobs from url
+func scrapeUrl(url string) {
+	var jobs []JobPosting
+
 	// Initialise a collector object
 	collector := colly.NewCollector()
 
+	// Apply rate limits
 	collector.Limit(&colly.LimitRule{
 		DomainGlob:  "*teachinherts.*",
 		Parallelism: 2,
@@ -137,160 +129,7 @@ func scrapeJobs() {
 		fmt.Println("An error occurred:", e)
 	})
 	collector.Visit(url)
-}
 
-func main() {
-	// Open database connection
-	db, err = sql.Open("mysql", dsn)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// scrapeJobs()
-
-	// Write jobs to MySQL DB
-	// writeJobsToDb()
-
-	// countJobs()
-
-	// Write all-jobs template
-	// testTemplates(jobs)
-
-	// fetchAllJobs()
-	// getLocations()
-	jobsBySubject()
-}
-
-func countJobs() {
-	verifyDb()
-	var count int
-	err = db.QueryRow("SELECT COUNT(*) FROM job").Scan(&count)
-	if err != nil {
-		fmt.Println("Error executing query:", err)
-		return
-	}
-
-	fmt.Printf("The db contains %d jobs.\n", count)
-}
-
-func writeJobsToDb() {
-	verifyDb()
-	stmt, err := db.Prepare("INSERT INTO job (title, school, location, hours, salary, description, url, closing_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-	if err != nil {
-		fmt.Println("Error preparing statement:", err)
-		return
-	}
-	defer stmt.Close()
-
-	for _, job := range jobs {
-		_, err := stmt.Exec(job.Title, job.School, job.Location, job.Hours, job.Salary, job.Description, job.DetailsUrl, job.ClosingDate)
-		if err != nil {
-			fmt.Println("Error executing statement:", err)
-			return
-		}
-	}
-	fmt.Printf("Inserted %d record(s). ✔️\n", len(jobs))
-	closeDb()
-}
-
-func fetchAllJobs() {
-	verifyDb()
-	// Define the query to fetch the first 10 rows
-	query := "SELECT * FROM job ORDER BY id ASC LIMIT 10"
-
-	// Execute the query
-	rows, err := db.Query(query)
-	if err != nil {
-		fmt.Println("Error executing query:", err)
-		return
-	}
-
-	var jobs []JobPosting
-	for rows.Next() {
-		var job JobPosting
-		// Scan the row into variables
-		err = rows.Scan(&job.ID, &job.Title, &job.School, &job.Location, &job.Hours, &job.Salary, &job.Description, &job.DetailsUrl, &job.ClosingDate)
-		if err != nil {
-			fmt.Println("Error scanning row:", err)
-			return
-		}
-		jobs = append(jobs, job)
-	}
-
-	writeDetails(jobs)
-}
-
-func closeDb() {
-	db.Close()
-}
-
-func jobsBySubject() {
-	verifyDb()
-
-	subjects := []string{
-		"Art",
-		"Business",
-		"Computing",
-		"Design & Technology",
-		"Drama",
-		"English",
-		"Geography",
-		"History",
-		"Maths",
-		"MFL",
-		"Music",
-		"PE",
-		"Religious Studies",
-		"Science",
-		"SEND",
-		"Sociology & Psychology",
-	}
-
-	// Search the database for jobs in each subject
-	for _, subject := range subjects {
-		// fmt.Println(subject, "jobs...")
-		// Build query
-		// query := fmt.Sprintf("SELECT * FROM job WHERE LOWER(title) LIKE '%%%s%%' OR LOWER(description) LIKE '%%%s%%';", subject, subject)
-		query := fmt.Sprintf("SELECT * FROM job WHERE LOWER(title) LIKE '%%%s%%';", subject)
-
-		rows, err := db.Query(query)
-		if err != nil {
-			fmt.Println("Error executing query:", err)
-			return
-		}
-
-		var jobs []JobPosting
-		for rows.Next() {
-			// Scan rows into jobs
-			var job JobPosting
-			err = rows.Scan(&job.ID, &job.Title, &job.School, &job.Location, &job.Hours, &job.Salary, &job.Description, &job.DetailsUrl, &job.ClosingDate)
-			if err != nil {
-				fmt.Println("Error scanning row:", err)
-				return
-			}
-			jobs = append(jobs, job)
-			// fmt.Println(job.ID)
-		}
-		// fmt.Printf("Found %d %s jobs\n", len(jobs), subject)
-		// Write a file containing these jobs
-		tmpl, err := template.New("job-cards.tmpl").ParseFiles("job-cards.tmpl")
-		if err != nil {
-			panic(err)
-		}
-		var f *os.File
-		fileName := fmt.Sprintf("subject/%s.html", strings.ToLower(subject))
-		f, err = os.Create(fileName)
-		if err != nil {
-			panic(err)
-		}
-		err = tmpl.Execute(f, jobs)
-		if err != nil {
-			panic(err)
-		}
-		err = f.Close()
-		if err != nil {
-			panic(err)
-		}
-
-	}
+	// Write jobs into the database
+	insertJobs(jobs)
 }
