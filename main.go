@@ -12,12 +12,15 @@ func main() {
 	openDb()
 
 	// Flags to control program actions
-	scrape := flag.Bool("scrape", false, "Start scraping url")
+	var command string
+	flag.StringVar(&command, "command", "", "Command to execute")
 	flag.Parse()
 
-	if *scrape {
-		fmt.Println("Scraping started...")
-		// scrapeUrl(url)
+	switch {
+	case command == "scrape":
+		scrapeUrl(url)
+	case command == "delete":
+		deleteAllJobs()
 	}
 
 	// If still open, close the database connection

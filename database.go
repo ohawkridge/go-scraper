@@ -226,3 +226,16 @@ func insertJobs(jobs []JobPosting) {
 	}
 	fmt.Printf("Inserted %d record(s). ✔️\n", len(jobs))
 }
+
+// Delete *all* jobs ahead of re-scraping
+func deleteAllJobs() {
+	// TRUNCATE is faster because it removes all rows by deallocating the data pages used by the table
+	query := "TRUNCATE TABLE table_name;"
+	_, err := db.Exec(query)
+	if err != nil {
+		fmt.Println("Error executing query:", err)
+		return
+	}
+
+	fmt.Println("All jobs deleted ✔️")
+}
