@@ -13,6 +13,10 @@ html {
     padding: 10px;
 }
 
+a.button {
+    text-transform: uppercase;
+}
+
 /******************/
 /*   Typography   */
 /******************/
@@ -122,35 +126,35 @@ footer {
 
 table {
     border-spacing: 0;
-    display: block;
     overflow-x: auto;
     text-align: left;
-    width: 100%;
     border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
 td,
 th {
-    border-bottom: 0.1rem solid #e1e1e1;
+    border-bottom: thin solid #e1e1e1;
     padding: 1.2rem 1.5rem;
 }
 
 td:first-child,
 th:first-child {
     padding-left: 0;
-}
-
-td:last-child,
-th:last-child {
     padding-right: 0;
 }
 
-@media (min-width: 40rem) {
+@media screen and (max-width: 768px) {
     table {
-        display: table;
-        overflow-x: initial;
+        width: 100%;
+    }
+
+    td,
+    th {
+        padding: 0.8rem 1.0rem;
     }
 }
+
 
 /******************/
 /*      Card      */
@@ -170,7 +174,7 @@ aside.card {
 @media (max-width: 600px) {
     aside.card {
         /* Optional: adjust padding or other styles for smaller screens */
-        /* padding: 10px; */
+        padding: 10px;
     }
 }
 
@@ -192,12 +196,12 @@ a.clickable-aside aside {
 
 p.subtitle {
     margin-bottom: 30px;
-}   
+}
 
 /******************/
 /*    Utilities   */
 /******************/
 
 .debug {
-    /* border: 1px dashed green; */
+    border: 1px dashed green;
 }

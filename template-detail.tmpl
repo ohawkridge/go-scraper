@@ -4,20 +4,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JOB# {{ .ID }}</title>
-    <!-- <link rel="stylesheet" href="assets/style.css"> -->
+    <title>Job #{{ .ID }}</title>
     <link rel="stylesheet" href="file:///Users/owen/go-scraper/assets/style.css">
 </head>
 
 <body>
-    <nav class="debug">
+ <nav>
+        <div id="logo" style="float: left;">
+            <svg width="42" height="42" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <g fill="#3498db">
+                    <polygon points="100,40 60,60 100,80 140,60" />
+                    <rect x="95" y="80" width="10" height="50" />
+                </g>
+            </svg>
+        </div>
         <ul>
-            <li><a href="/" title="Home">Home</a></li>
+            <li style="float:left"><a href="/" title="Home">Home</a></li>
+            <li style="float:left"><a href="file:///Users/owen/go-scraper/html/all.html" title="All jobs">All jobs</a></li>
+            <li style="float:right"><a href="about.html" title="About">About</a></li>
         </ul>
     </nav>
     <main class="content">
         <h2>{{ .Title }}</h2>
         <h4>{{ .School }}</h4>
+        <p class="small-text">{{ .Description }}</p>
         <table class="regular-text">
             <tr>
                 <th>Location</th>
@@ -36,9 +46,8 @@
                 <td>{{ .ClosingDate }}</td>
             </tr>
         </table>
-        <p class="small-text">{{ .Description }}</p>
         <p>
-            <a href="{{ .DetailsUrl }}">View full details</a> &#x2197;
+            <a href="{{ .DetailsUrl }}" class="button">View post</a> &#x2197;
         </p>
     </main>
     <footer class="small-text">
