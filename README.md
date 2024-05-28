@@ -1,5 +1,5 @@
 # GO Web Scraper
-(https://some.com/)[LIVE DEMO 🔗]
+[LIVE DEMO 🔗](https://some.com/)
 
 ### What does it do?
 
