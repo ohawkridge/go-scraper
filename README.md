@@ -1,4 +1,4 @@
-# GO Web Scraper
+# _GO_ Web Scraper
 [LIVE DEMO](https://some.com/) 🔗
 
 ### What does it do?
