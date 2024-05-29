@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"path/filepath"
 )
 
 // Outputs array of JobPostings as cards in a single html file.
@@ -82,4 +83,50 @@ func locationsToFile(locations []Location) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func schoolsToFile(schools []School) {
+	// Create a new template and check for errors
+	tmpl, err := template.New("template-schools.tmpl").ParseFiles("template-schools.tmpl")
+	if err != nil {
+		panic(err)
+	}
+	var f *os.File
+	f, err = os.Create("html/schools.html")
+	if err != nil {
+		panic(err)
+	}
+	err = tmpl.Execute(f, schools)
+	if err != nil {
+		panic(err)
+	}
+	err = f.Close()
+	if err != nil {
+		panic(err)
+	}
+}
+
+// Delete all file in a directory.
+// Called prior to writing new files.
+//
+// Parameters:
+//   - dir: the path of the directory to delete.
+func deleteFilesInDir(dir string) error {
+	// Read all files in the directory
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+
+	// Iterate through the files and delete each one
+	for _, file := range files {
+		if !file.IsDir() { // Ensure it is a file, not a directory
+			err = os.Remove(filepath.Join(dir, file.Name()))
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

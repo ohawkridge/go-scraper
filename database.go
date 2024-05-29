@@ -18,6 +18,12 @@ type Location struct {
 	Url      string
 }
 
+type School struct {
+	Name    string
+	Url     string
+	NumJobs int
+}
+
 var (
 	db  *sql.DB
 	err error
@@ -117,6 +123,47 @@ func getLocations() ([]Location, error) {
 	}
 
 	return locations, err
+}
+
+// Get schools based on all jobs in the database.
+//
+// Returns:
+//   - array of School objects.
+func getSchools() ([]School, error) {
+	verifyDb()
+
+	var schools []School
+	// Find distinct schools named in jobs
+	query := "SELECT DISTINCT school FROM job WHERE NOT school='' ORDER BY school ASC;"
+
+	rows, err := db.Query(query)
+	if err != nil {
+		fmt.Println("Error executing query:", err)
+		return nil, err
+	}
+
+	for rows.Next() {
+		var school School
+		err = rows.Scan(&school.Name)
+		if err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+		// Turn school's name into url-safe-slug
+		school.Url = locationToSlug(school.Name)
+
+		// Get the number of jobs at this school
+		n, err := countSchoolJobs(school.Name)
+		if err == nil {
+			school.NumJobs = n
+		} else {
+			fmt.Printf("Error counting jobs at %s\n%s\n", school.Name, err)
+		}
+
+		schools = append(schools, school)
+	}
+
+	return schools, err
 }
 
 // Converts a location like "Welwyn / Hatfield District"
@@ -238,4 +285,21 @@ func deleteAllJobs() {
 	}
 
 	fmt.Println("All jobs deleted ✔️")
+}
+
+// Count the number of jobs at a school
+func countSchoolJobs(school string) (int, error) {
+	// verifyDb() should be connected
+
+	// Construct COUNT query
+	query := "SELECT COUNT(*) AS num_jobs FROM job WHERE school = ?"
+
+	var count int
+	row := db.QueryRow(query, school)
+	err = row.Scan(&count)
+	if err != nil {
+		return -1, err
+	}
+	// fmt.Printf("Found %d jobs at %s\n", count, school)
+	return count, nil
 }

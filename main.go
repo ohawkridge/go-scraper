@@ -41,6 +41,16 @@ func main() {
 		// Create a detail.html for *every* job
 		jobs := getJobs(-1)
 		jobsToFiles(jobs)
+	case command == "schools":
+		// Find schools named in jobs
+		schools, err := getSchools()
+		if err != nil {
+			fmt.Println("Error getting schools.\n", err)
+		}
+
+		// Output browse by school html file
+		schoolsToFile(schools)
+
 	}
 
 	// If still open, close the database connection
