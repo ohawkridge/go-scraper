@@ -6,6 +6,7 @@ import (
 )
 
 const url string = "https://www.teachinherts.com/find-a-job.htm"
+const url2 string = "https://teaching-vacancies.service.gov.uk/jobs"
 
 func main() {
 	// Connect to database
@@ -19,6 +20,8 @@ func main() {
 	switch {
 	case command == "scrape":
 		scrapeUrl(url)
+	case command == "scrape2":
+		scrapeUrl2(url2)
 	case command == "delete":
 		deleteAllJobs()
 	case command == "locations":
