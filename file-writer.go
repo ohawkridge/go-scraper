@@ -65,6 +65,8 @@ func jobsToFiles(jobs []JobPosting) {
 // Parameters:
 //   - locations: an array of Location objects.
 func locationsToFile(locations []Location) {
+	deleteFilesInDir("html/location")
+
 	// Create a new template and check for errors
 	tmpl, err := template.New("template-locations.tmpl").ParseFiles("template-locations.tmpl")
 	if err != nil {
@@ -86,6 +88,7 @@ func locationsToFile(locations []Location) {
 }
 
 func schoolsToFile(schools []School) {
+	deleteFilesInDir("html/school")
 	// Create a new template and check for errors
 	tmpl, err := template.New("template-schools.tmpl").ParseFiles("template-schools.tmpl")
 	if err != nil {

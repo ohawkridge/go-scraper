@@ -3,7 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -302,4 +304,81 @@ func countSchoolJobs(school string) (int, error) {
 	}
 	// fmt.Printf("Found %d jobs at %s\n", count, school)
 	return count, nil
+}
+
+func numsOnly(s string) string {
+	// Remove all non-digit characters
+	re := regexp.MustCompile(`[^0-9]`)
+	return re.ReplaceAllString(s, "")
+}
+
+// Check if salary is hourly
+func isHourly(s string) bool {
+	// Construct a regular expression pattern to match any of the substrings
+	re := regexp.MustCompile(`(?i)(hourly|per hour|hour|p/h|hrs|closing)`)
+	return re.MatchString(s)
+}
+
+func contains5Digits(s string) bool {
+	// Improved to check for 5 digits *after* £
+	if strings.Contains(s, "£") {
+		s = s[strings.IndexRune(s, '£'):]
+	}
+	// Compile the regular expression to match at least 5 digits
+	re := regexp.MustCompile(`(\D*\d){5}`)
+	return re.MatchString(s)
+}
+
+func extractSalary(s string) (int, error) {
+	// Find the index of the first '£'
+	index := strings.IndexRune(s, '£')
+	if index == -1 {
+		return 0, err
+	} else {
+		// Extract the next 6 characters (£19,999) as an int
+		fmt.Println(s)
+		s = s[index : index+8]
+		fmt.Println(s)
+		salary, err := strconv.Atoi(numsOnly(s))
+		return salary, err
+	}
+}
+
+// Admin function to process all records
+func processAllRecords() {
+	verifyDb()
+
+	// Get all records
+	rows, err := db.Query("SELECT id, salary FROM job;")
+	if err != nil {
+		fmt.Println("Error executing query:", err)
+	}
+	for rows.Next() {
+		var salary string
+		var id int
+		err := rows.Scan(&id, &salary)
+		if err != nil {
+			fmt.Println("Error scanning row:", err)
+			panic(err.Error())
+		}
+		if !isHourly(salary) && contains5Digits(salary) {
+			extracted, err := extractSalary(salary)
+			if err != nil {
+				fmt.Println("Error extracting salary", err)
+			}
+
+			// Execute the UPDATE query
+			query := `UPDATE job SET base_salary = ? WHERE id = ?`
+			result, err := db.Exec(query, extracted, id)
+			if err != nil {
+				fmt.Println("Error executing query", err)
+			} else {
+				n, err := result.RowsAffected()
+				if err != nil {
+					log.Fatalf("Error fetching number of rows affected: %v", err)
+				}
+				fmt.Printf("Updated job %d (%d row affected)\n", id, n)
+			}
+		}
+	}
 }

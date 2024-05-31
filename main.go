@@ -50,6 +50,8 @@ func main() {
 
 		// Output browse by school html file
 		schoolsToFile(schools)
+	case command == "base_salaries":
+		processAllRecords()
 
 	}
 
