@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -12,7 +12,6 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gocolly/colly"
-	"github.com/jedib0t/go-pretty/v6/table"
 )
 
 type JobPosting struct {
@@ -57,7 +56,12 @@ func monthToNumber(month string) string {
 
 // Like 5 June 2024 at 9am
 func govStringToTime(date string) string {
+	// fmt.Println("Closes:", date)
 	parts := strings.Fields(date)
+	// Crashing randomly
+	if len(parts) < 5 {
+		return "2024-12-31 00:00:00"
+	}
 
 	// Make day 2 digits
 	day := parts[0]
@@ -118,11 +122,12 @@ func scrapeUrl(url string) {
 	collector := colly.NewCollector()
 
 	// Apply rate limits
+	// gov.uk is quite fast
 	collector.Limit(&colly.LimitRule{
-		DomainGlob:  "*teachinherts.*",
+		DomainGlob:  "*teachinherts*",
 		Parallelism: 2,
-		Delay:       3,               // Start with a 3 second delay
-		RandomDelay: 5 * time.Second, // Additional random delay between 0 and 5 seconds
+		Delay:       2,               // Start with a 2 second delay
+		RandomDelay: 3 * time.Second, // Additional random delay
 	})
 
 	collector.OnRequest(func(r *colly.Request) {
@@ -172,19 +177,19 @@ func scrapeUrl(url string) {
 func scrapeUrl2(url2 string) {
 	// var jobs []JobPosting
 	// Output nice table in console
-	t := table.NewWriter()
-	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Title", "Closing", "URL"})
+	// t := table.NewWriter()
+	// t.SetOutputMirror(os.Stdout)
+	// t.AppendHeader(table.Row{"Title", "Closing", "URL"})
 
 	// Initialise a collector object
 	collector := colly.NewCollector()
 
 	// Apply rate limits
 	collector.Limit(&colly.LimitRule{
-		DomainGlob:  "*service.gov.uk.*",
+		DomainGlob:  "*gov*",
 		Parallelism: 2,
-		Delay:       3,               // Start with a 3 second delay
-		RandomDelay: 5 * time.Second, // Additional random delay between 0 and 5 seconds
+		Delay:       3,               // Start with a 5 second delay
+		RandomDelay: 3 * time.Second, // Additional random delay between 0 and 5 seconds
 	})
 
 	collector.OnRequest(func(r *colly.Request) {
@@ -193,16 +198,20 @@ func scrapeUrl2(url2 string) {
 
 	collector.OnResponse(func(r *colly.Response) {
 		fmt.Println("Got a response from", r.Request.URL, "✔️")
+		if r.StatusCode == http.StatusNoContent {
+			fmt.Println("No Content to process")
+			return
+		}
 	})
 
 	// Handle pagination by looking for next page link
-	//
 	// collector.OnHTML("a.govuk-pagination__link", func(e *colly.HTMLElement) {
-	// 	nextPage := e.Attr("href")
-	// 	if nextPage != "" {
-	// 		e.Request.Visit(nextPage)
-	// 	}
-	// })
+	collector.OnHTML("div.govuk-pagination__next a.govuk-pagination__link", func(e *colly.HTMLElement) {
+		nextPage := e.Attr("href")
+		if nextPage != "" {
+			e.Request.Visit(nextPage)
+		}
+	})
 
 	collector.OnHTML("div.search-results__item", func(e *colly.HTMLElement) {
 		// initialise a new job struct every time we visit a page
@@ -230,27 +239,29 @@ func scrapeUrl2(url2 string) {
 		job.Description = fmt.Sprintf("See <a href='%s'>full job details</a>", url)
 
 		// TESTING
-		if len(job.Title) > 30 {
-			job.Title = job.Title[:29] + "..."
-		}
-		if len(job.School) > 26 {
-			job.School = job.School[:25] + "..."
-		}
-		if len(job.Salary) > 26 {
-			job.Salary = job.Salary[:25] + "..."
-		}
-		t.AppendRow(table.Row{job.Title, job.ClosingDate, job.DetailsUrl})
+		// if len(job.Title) > 30 {
+		// 	job.Title = job.Title[:29] + "..."
+		// }
+		// if len(job.School) > 26 {
+		// 	job.School = job.School[:25] + "..."
+		// }
+		// if len(job.Salary) > 26 {
+		// 	job.Salary = job.Salary[:25] + "..."
+		// }
+		// t.AppendRow(table.Row{job.Title, job.ClosingDate, job.DetailsUrl})
 
 		// jobs = append(jobs, job)
+		// Insert jobs as they're found...
+		insertJob(job)
 	})
 	collector.OnError(func(r *colly.Response, e error) {
 		fmt.Println("An error occurred:", e)
 	})
 	collector.Visit(url2)
 	// t.AppendFooter(table.Row{"COUNT", len(jobs2)})
-	t.AppendFooter(table.Row{"COUNT", t.Length()})
-	t.SetStyle(table.StyleLight)
-	t.Render()
+	// t.AppendFooter(table.Row{"COUNT", t.Length()})
+	// t.SetStyle(table.StyleLight)
+	// t.Render()
 	// Write jobs into the database
 	// insertJobs(jobs)
 }

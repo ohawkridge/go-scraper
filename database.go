@@ -382,3 +382,35 @@ func processAllRecords() {
 		}
 	}
 }
+
+func countJobs() (int, error) {
+	verifyDb()
+
+	// Define the query to count all records in the table
+	query := "SELECT COUNT(*) FROM job;"
+
+	// Execute the query
+	var count int
+	err = db.QueryRow(query).Scan(&count)
+	if err != nil {
+		return -1, err
+	}
+
+	return count, err
+}
+
+func insertJob(job JobPosting) {
+	fmt.Println("Inserting:", job.Title)
+	// Define the SQL INSERT statement
+	query := "INSERT INTO job (title, school, location, hours, salary, description, url, closing_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+
+	// Execute the INSERT statement
+	result, err := db.Exec(query, job.Title, job.School, job.Location, job.Hours, job.Salary, job.Description, job.DetailsUrl, job.ClosingDate)
+	if err != nil {
+		fmt.Printf("Error executing query: %v\n", err)
+	}
+
+	// Retrieve the ID of the last inserted record
+	lastInsertID, _ := result.LastInsertId()
+	fmt.Printf("Inserted job with id: %d\n", lastInsertID)
+}

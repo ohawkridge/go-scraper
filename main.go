@@ -6,7 +6,9 @@ import (
 )
 
 const url string = "https://www.teachinherts.com/find-a-job.htm"
-const url2 string = "https://teaching-vacancies.service.gov.uk/jobs"
+
+// const url2 string = "https://teaching-vacancies.service.gov.uk/jobs"
+const url2 string = "https://teaching-vacancies.service.gov.uk/jobs?page=549"
 
 func main() {
 	// Connect to database
@@ -24,6 +26,13 @@ func main() {
 		scrapeUrl2(url2)
 	case command == "delete":
 		deleteAllJobs()
+	case command == "count":
+		n, err := countJobs()
+		if err != nil {
+			fmt.Println("Error counting jobs\n", err)
+		} else {
+			fmt.Printf("%d jobs ✔️\n", n)
+		}
 	case command == "locations":
 		locations, err := getLocations()
 		if err != nil {
@@ -58,12 +67,6 @@ func main() {
 
 	}
 
-	// If still open, close the database connection
-	open, err := verifyDb()
-	if err != nil {
-		fmt.Println("Error, can't Ping database.")
-	}
-	if open {
-		closeDb()
-	}
+	// Close the database connection
+	closeDb()
 }
