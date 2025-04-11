@@ -6,9 +6,7 @@ import (
 )
 
 const url string = "https://www.teachinherts.com/find-a-job.htm"
-
-// const url2 string = "https://teaching-vacancies.service.gov.uk/jobs"
-const url2 string = "https://teaching-vacancies.service.gov.uk/jobs?page=549"
+const url2 string = "https://teaching-vacancies.service.gov.uk/jobs"
 
 func main() {
 	// Connect to database

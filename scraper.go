@@ -204,15 +204,6 @@ func scrapeUrl2(url2 string) {
 		}
 	})
 
-	// Handle pagination by looking for next page link
-	// collector.OnHTML("a.govuk-pagination__link", func(e *colly.HTMLElement) {
-	collector.OnHTML("div.govuk-pagination__next a.govuk-pagination__link", func(e *colly.HTMLElement) {
-		nextPage := e.Attr("href")
-		if nextPage != "" {
-			e.Request.Visit(nextPage)
-		}
-	})
-
 	collector.OnHTML("div.search-results__item", func(e *colly.HTMLElement) {
 		// initialise a new job struct every time we visit a page
 		job := JobPosting{}
@@ -254,9 +245,20 @@ func scrapeUrl2(url2 string) {
 		// Insert jobs as they're found...
 		insertJob(job)
 	})
+
 	collector.OnError(func(r *colly.Response, e error) {
 		fmt.Println("An error occurred:", e)
 	})
+
+	// Handle pagination by looking for next page link
+	// collector.OnHTML("a.govuk-pagination__link", func(e *colly.HTMLElement) {
+	collector.OnHTML("div.govuk-pagination__next a.govuk-pagination__link", func(e *colly.HTMLElement) {
+		nextPage := e.Attr("href")
+		if nextPage != "" {
+			e.Request.Visit(nextPage)
+		}
+	})
+
 	collector.Visit(url2)
 	// t.AppendFooter(table.Row{"COUNT", len(jobs2)})
 	// t.AppendFooter(table.Row{"COUNT", t.Length()})

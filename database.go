@@ -400,7 +400,7 @@ func countJobs() (int, error) {
 }
 
 func insertJob(job JobPosting) {
-	fmt.Println("Inserting:", job.Title)
+	// fmt.Println("Inserting:", job.Title)
 	// Define the SQL INSERT statement
 	query := "INSERT INTO job (title, school, location, hours, salary, description, url, closing_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
